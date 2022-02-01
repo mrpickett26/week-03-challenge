@@ -13,6 +13,24 @@ head(d)
 library(skimr)
 library(kableExtra)
 boxplot(log (d$Body_mass_female_mean)~d$Family)
+plot(x= d$Body_mass_female_mean, y=d$Brain_Size_Female_Mean)
+library(car)
+scatterplot(
+  data = d,
+  log(Brain_Size_Female_Mean) ~ log(Body_mass_female_mean),
+  xlab = "log(Female Body Mass",
+  ylab = "log(Female Brain Size",
+  boxplots = "xy",
+  regLine = 
+    list(
+       # method = lm,
+       lty = 1,
+       lwd = 2,
+       col = "red"
+    )
+)
+
+
 
 
 
