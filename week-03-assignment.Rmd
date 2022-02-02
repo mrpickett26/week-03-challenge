@@ -29,7 +29,20 @@ scatterplot(
        col = "red"
     )
 )
-
+library(dplyr)
+s<- mutate(d, Binomial=paste(Genus, Species, sep=" ")) %>%
+  select(Binomial,
+         Family, 
+         Brain_Size_Species_Mean,
+         Body_mass_male_mean) %>%
+  group_by(Family) %>%
+  summarise(
+    avgBrS= mean(Brain_Size_Species_Mean, na.rm=TRUE),
+    avgBMM= mean(Body_mass_male_mean, na.rm=TRUE),
+  )%>%
+  arrange(avgBrS)
+s
+  
 
 
 
