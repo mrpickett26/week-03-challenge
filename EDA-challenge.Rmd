@@ -1,0 +1,134 @@
+---
+title: "EDA-challenge"
+author: "Madison Pickett"
+date: "2/8/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+df<- "https://raw.githubusercontent.com/difiore/ada-2022-datasets/main/data-wrangling.csv"
+d<- read_csv(df, col_names=TRUE)
+head(d)
+library(skimr)
+library(kableExtra)
+library(car)
+library(dplyr)
+library(ggplot2)
+#1
+d<-d%>%mutate(BSD= d$Body_mass_male_mean/d$Body_mass_female_mean)
+#2
+d<-d%>%mutate(sex_ratio= d$AdultFemale/d$AdultMales)
+#3
+r<- sqrt(d$HomeRange_km2)/pi
+#4
+d<-d%>%mutate(DI= d$DayLength_km/r)
+par(mfrow=c(1,2))
+plot(x = d$DayLength_km, y = d$Move)
+plot(x = log(d$DayLength_km), y = log(d$Move))
+p <- ggplot(data=d, aes(x=log(DayLength_km),
+                                                y=log(Move),
+                                                color = factor(Family)
+                                                )) # first, we build a plot object and color points by Family
+# then we modify the axis labels
+p <- p + xlab("log(Day Length)") + ylab("log(Move)")
+# then we make a scatterplot
+p <- p + geom_point(na.rm=TRUE)
+# then we modify the legend
+p <- p + theme(legend.position="bottom", legend.title=element_blank())
+# and, finally, we plot the object
+p
+# the log transform shows a better representation of the data 
+
+#Question 5
+par(mfrow=c(1,2))
+plot(x = d$DayLength_km, y = d$MeanGroupSize)
+plot(x = log(d$DayLength_km), y = log(d$MeanGroupSize))
+
+p <- ggplot(data=d, aes(x=log(DayLength_km),
+                                                y=log(MeanGroupSize),
+                                                color = factor(Family)
+                                                )) # first, we build a plot object and color points by Family
+# then we modify the axis labels
+p <- p + xlab("log(Day Length)") + ylab("log(MeanGroupSize)")
+# then we make a scatterplot
+p <- p + geom_point(na.rm=TRUE)
+# then we modify the legend
+p <- p + theme(legend.position="bottom", legend.title=element_blank())
+# and, finally, we plot the object
+p
+# the log transform shows a better representation of the data again
+
+
+
+# Question 6
+par(mfrow=c(1,2))
+plot(x = d$BSD, y = d$Canine_Dimorphism)
+
+p <- ggplot(data=d, aes(x=log(BSD),
+                                                y=log(Canine_Dimorphism),
+                                                color = factor(Family)
+                                                )) # first, we build a plot object and color points by Family
+# then we modify the axis labels
+p <- p + xlab("log(BSD)") + ylab("log(Canine_Dimorphorism)")
+# then we make a scatterplot
+p <- p + geom_point(na.rm=TRUE)
+# then we modify the legend
+p <- p + theme(legend.position="bottom", legend.title=element_blank())
+# and, finally, we plot the object
+p
+# it looks like the Familys with clustered average higher BSD values, showed higher Canine Dimorphism values 
+
+
+#Q 7 
+
+diet_strategy<- mutate(d, "diet" = ifelse(
+  Fruit >= 50,
+  "frugivore",
+  ifelse(Leaves >= 50, "folivore", "omnivore")
+))
+
+mutate(
+  d,
+  "diet" = case_when(
+    Fruit >= 50 ~ "frugivore",
+    Leaves >= 50 ~ "folivore",
+    Fruit < 50 & Leaves < 50 ~ "omnivore"
+  )
+)
+
+
+#Question 8 
+library(dplyr)
+s<- mutate(d, Binomial=paste(Genus, Species, sep=" ")) %>%
+  select(Binomial,
+         Family, 
+         Brain_Size_Species_Mean,
+         Body_mass_male_mean) %>%
+  group_by(Family) %>%
+  summarise(
+    avgBrS= mean(Brain_Size_Species_Mean, na.rm=TRUE),
+    avgBMM= mean(Body_mass_male_mean, na.rm=TRUE),
+  )%>%
+  arrange(avgBrS)
+s
+
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

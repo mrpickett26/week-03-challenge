@@ -42,7 +42,7 @@ s<- mutate(d, Binomial=paste(Genus, Species, sep=" ")) %>%
   )%>%
   arrange(avgBrS)
 s
-  
+
 
 
 
